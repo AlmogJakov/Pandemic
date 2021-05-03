@@ -13,7 +13,8 @@ namespace pandemic {
         }
         if (colors<five_cards) {
             stringstream ss;
-            ss << "cannot discover_cure in " << board.cities[this->city].city;
+            ss << "cannot discover_cure in " << board[this->city].city;
+            //ss << "cannot discover_cure to disease colored as " << this->board.get_color(c);
             throw invalid_argument(ss.str());
         }
         if (board.medicines[c]) {return *this;}

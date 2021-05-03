@@ -69,10 +69,10 @@ namespace pandemic {
     }
 
     /* get the color as string from city_struct object */
-    string get_color(const city_struct& c) {
-        if (c.color==Color::Blue) {return "Blue";}
-        if (c.color==Color::Yellow) {return "Yellow";}
-        if (c.color==Color::Black) {return "Black";}
+    string get_color(Color c) {
+        if (c==Color::Blue) {return "Blue";}
+        if (c==Color::Yellow) {return "Yellow";}
+        if (c==Color::Black) {return "Black";}
         return "Red";
     }
 

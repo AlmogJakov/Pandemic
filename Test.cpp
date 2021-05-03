@@ -266,7 +266,8 @@ void discover_cure_test(Player& player, Board& board) {
 	/* Scientist Action */
 	if (player.role() == "Scientist") {
 		for (auto &city : cities_mp) {
-			int iRand = (rand() % 9) + 1;
+			/* n = Random number from 1 to 5 */
+			int iRand = (rand() % 5) + 1;
 			Scientist scientist(board, city.first, iRand);
 			int counter = 0;
 			for (auto &c : cities_mp) {

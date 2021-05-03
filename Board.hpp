@@ -41,5 +41,6 @@ namespace pandemic {
         friend ostream& operator<<(ostream& os, const Board& b);
         void remove_cures() {for (auto &cure : medicines) {cure.second = false;}};
         bool is_clean();
+        string get_color(Color c);
     };
 }
