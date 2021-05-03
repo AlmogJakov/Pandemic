@@ -3,6 +3,7 @@
  * 
  * Date: 2021-04
  */
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
 /* include main classes */
@@ -26,69 +27,69 @@ using namespace pandemic;
 #include <set>
 using namespace std;
 
-struct city_s {
+struct city_st {
     string city;
     Color color;
     set<City> neighbors;
 };
-map<City,city_s> cities;
+map<City,city_st> cities_mp;
 set<City> research_stations_cities;
 void init() {
 	/* init cities map */
-	cities = {
-		{City::Algiers,(city_s){"Algiers",Color::Black,{City::Madrid, City::Paris, City::Istanbul, City::Cairo}}},
-        {City::Atlanta,(city_s){"Atlanta",Color::Blue,{City::Chicago, City::Miami, City::Washington}}},
-        {City::Baghdad,(city_s){"Baghdad",Color::Black,{City::Tehran, City::Istanbul, City::Cairo, City::Riyadh, City::Karachi}}},
-        {City::Bangkok,(city_s){"Bangkok",Color::Red,{City::Kolkata, City::Chennai, City::Jakarta, City::HoChiMinhCity, City::HongKong}}},
-        {City::Beijing,(city_s){"Beijing",Color::Red,{City::Shanghai, City::Seoul}}},
-        {City::Bogota,(city_s){"Bogota",Color::Yellow,{City::MexicoCity, City::Lima, City::Miami, City::SaoPaulo, City::BuenosAires}}},
-        {City::BuenosAires,(city_s){"BuenosAires",Color::Yellow,{City::Bogota, City::SaoPaulo}}},
-        {City::Cairo,(city_s){"Cairo",Color::Black,{City::Algiers, City::Istanbul, City::Baghdad, City::Khartoum, City::Riyadh}}},
-        {City::Chennai,(city_s){"Chennai",Color::Black,{City::Mumbai, City::Delhi, City::Kolkata, City::Bangkok, City::Jakarta}}},
-        {City::Chicago,(city_s){"Chicago",Color::Blue,{City::SanFrancisco, City::LosAngeles, City::MexicoCity, City::Atlanta, City::Montreal}}},
-        {City::Delhi,(city_s){"Delhi",Color::Black,{City::Tehran, City::Karachi, City::Mumbai, City::Chennai, City::Kolkata}}},
-        {City::Essen,(city_s){"Essen",Color::Blue,{City::London, City::Paris, City::Milan, City::StPetersburg}}},
-        {City::HoChiMinhCity,(city_s){"HoChiMinhCity",Color::Red,{City::Jakarta, City::Bangkok, City::HongKong, City::Manila}}},
-        {City::HongKong,(city_s){"HongKong",Color::Red,{City::Bangkok, City::Kolkata, City::HoChiMinhCity, City::Shanghai, City::Manila, City::Taipei}}},
-        {City::Istanbul,(city_s){"Istanbul",Color::Black,{City::Milan, City::Algiers, City::StPetersburg, City::Cairo, City::Baghdad, City::Moscow}}},
-        {City::Jakarta,(city_s){"Jakarta",Color::Red,{City::Chennai, City::Bangkok, City::HoChiMinhCity, City::Sydney}}},
-        {City::Johannesburg,(city_s){"Johannesburg",Color::Yellow,{City::Kinshasa, City::Khartoum}}},
-        {City::Karachi,(city_s){"Karachi",Color::Black,{City::Tehran, City::Baghdad, City::Riyadh, City::Mumbai, City::Delhi}}},
-        {City::Khartoum,(city_s){"Khartoum",Color::Yellow,{City::Cairo, City::Lagos, City::Kinshasa, City::Johannesburg}}},
-        {City::Kinshasa,(city_s){"Kinshasa",Color::Yellow,{City::Lagos, City::Khartoum, City::Johannesburg}}},
-        {City::Kolkata,(city_s){"Kolkata",Color::Black,{City::Delhi, City::Chennai, City::Bangkok, City::HongKong}}},
-        {City::Lagos,(city_s){"Lagos",Color::Yellow,{City::SaoPaulo, City::Khartoum, City::Kinshasa}}},
-        {City::Lima,(city_s){"Lima",Color::Yellow,{City::MexicoCity, City::Bogota, City::Santiago}}},
-        {City::London,(city_s){"London",Color::Blue,{City::NewYork, City::Madrid, City::Essen, City::Paris}}},
-        {City::LosAngeles,(city_s){"LosAngeles",Color::Yellow,{City::SanFrancisco, City::Chicago, City::MexicoCity, City::Sydney}}},
-        {City::Madrid,(city_s){"Madrid",Color::Blue,{City::London, City::NewYork, City::Paris, City::SaoPaulo, City::Algiers}}},
-        {City::Manila,(city_s){"Manila",Color::Red,{City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
-        {City::MexicoCity,(city_s){"MexicoCity",Color::Yellow,{City::LosAngeles, City::Chicago, City::Miami, City::Lima, City::Bogota}}},
-        {City::Miami,(city_s){"Miami",Color::Yellow,{City::Atlanta, City::MexicoCity, City::Washington, City::Bogota}}},
-        {City::Milan,(city_s){"Milan",Color::Blue,{City::Essen, City::Paris, City::Istanbul}}},
-        {City::Montreal,(city_s){"Montreal",Color::Blue,{City::Chicago, City::Washington, City::NewYork}}},
-        {City::Moscow,(city_s){"Moscow",Color::Black,{City::StPetersburg, City::Istanbul, City::Tehran}}},
-        {City::Mumbai,(city_s){"Mumbai",Color::Black,{City::Karachi, City::Delhi, City::Chennai}}},
-        {City::NewYork,(city_s){"NewYork",Color::Blue,{City::Montreal, City::Washington, City::London, City::Madrid}}},
-        {City::Osaka,(city_s){"Osaka",Color::Red,{City::Taipei, City::Tokyo}}},
-        {City::Paris,(city_s){"Paris",Color::Blue,{City::Algiers, City::Essen, City::Madrid, City::Milan, City::London}}},
-        {City::Riyadh,(city_s){"Riyadh",Color::Black,{City::Baghdad, City::Cairo, City::Karachi}}},
-        {City::SanFrancisco,(city_s){"SanFrancisco",Color::Blue,{City::LosAngeles, City::Chicago, City::Tokyo, City::Manila}}},
-        {City::Santiago,(city_s){"Santiago",Color::Yellow,{City::Lima}}},
-        {City::SaoPaulo,(city_s){"SaoPaulo",Color::Yellow,{City::Bogota, City::BuenosAires, City::Lagos, City::Madrid}}},
-        {City::Seoul,(city_s){"Seoul",Color::Red,{City::Beijing, City::Shanghai, City::Tokyo}}},
-        {City::Shanghai,(city_s){"Shanghai",Color::Red,{City::Beijing, City::HongKong, City::Taipei, City::Seoul, City::Tokyo}}},
-        {City::StPetersburg,(city_s){"StPetersburg",Color::Blue,{City::Essen, City::Istanbul, City::Moscow}}},
-        {City::Sydney,(city_s){"Sydney",Color::Red,{City::Jakarta, City::Manila, City::LosAngeles}}},
-        {City::Taipei,(city_s){"Taipei",Color::Red,{City::Shanghai, City::HongKong, City::Osaka, City::Manila}}},
-        {City::Tehran,(city_s){"Tehran",Color::Black,{City::Baghdad, City::Moscow, City::Karachi, City::Delhi}}},
-        {City::Tokyo,(city_s){"Tokyo",Color::Red,{City::Seoul, City::Shanghai, City::Osaka, City::SanFrancisco}}},
-		{City::Washington,(city_s){"Washington",Color::Blue,{City::Atlanta, City::NewYork, City::Montreal, City::Miami}}}
+	cities_mp = {
+		{City::Algiers,(city_st){"Algiers",Color::Black,{City::Madrid, City::Paris, City::Istanbul, City::Cairo}}},
+        {City::Atlanta,(city_st){"Atlanta",Color::Blue,{City::Chicago, City::Miami, City::Washington}}},
+        {City::Baghdad,(city_st){"Baghdad",Color::Black,{City::Tehran, City::Istanbul, City::Cairo, City::Riyadh, City::Karachi}}},
+        {City::Bangkok,(city_st){"Bangkok",Color::Red,{City::Kolkata, City::Chennai, City::Jakarta, City::HoChiMinhCity, City::HongKong}}},
+        {City::Beijing,(city_st){"Beijing",Color::Red,{City::Shanghai, City::Seoul}}},
+        {City::Bogota,(city_st){"Bogota",Color::Yellow,{City::MexicoCity, City::Lima, City::Miami, City::SaoPaulo, City::BuenosAires}}},
+        {City::BuenosAires,(city_st){"BuenosAires",Color::Yellow,{City::Bogota, City::SaoPaulo}}},
+        {City::Cairo,(city_st){"Cairo",Color::Black,{City::Algiers, City::Istanbul, City::Baghdad, City::Khartoum, City::Riyadh}}},
+        {City::Chennai,(city_st){"Chennai",Color::Black,{City::Mumbai, City::Delhi, City::Kolkata, City::Bangkok, City::Jakarta}}},
+        {City::Chicago,(city_st){"Chicago",Color::Blue,{City::SanFrancisco, City::LosAngeles, City::MexicoCity, City::Atlanta, City::Montreal}}},
+        {City::Delhi,(city_st){"Delhi",Color::Black,{City::Tehran, City::Karachi, City::Mumbai, City::Chennai, City::Kolkata}}},
+        {City::Essen,(city_st){"Essen",Color::Blue,{City::London, City::Paris, City::Milan, City::StPetersburg}}},
+        {City::HoChiMinhCity,(city_st){"HoChiMinhCity",Color::Red,{City::Jakarta, City::Bangkok, City::HongKong, City::Manila}}},
+        {City::HongKong,(city_st){"HongKong",Color::Red,{City::Bangkok, City::Kolkata, City::HoChiMinhCity, City::Shanghai, City::Manila, City::Taipei}}},
+        {City::Istanbul,(city_st){"Istanbul",Color::Black,{City::Milan, City::Algiers, City::StPetersburg, City::Cairo, City::Baghdad, City::Moscow}}},
+        {City::Jakarta,(city_st){"Jakarta",Color::Red,{City::Chennai, City::Bangkok, City::HoChiMinhCity, City::Sydney}}},
+        {City::Johannesburg,(city_st){"Johannesburg",Color::Yellow,{City::Kinshasa, City::Khartoum}}},
+        {City::Karachi,(city_st){"Karachi",Color::Black,{City::Tehran, City::Baghdad, City::Riyadh, City::Mumbai, City::Delhi}}},
+        {City::Khartoum,(city_st){"Khartoum",Color::Yellow,{City::Cairo, City::Lagos, City::Kinshasa, City::Johannesburg}}},
+        {City::Kinshasa,(city_st){"Kinshasa",Color::Yellow,{City::Lagos, City::Khartoum, City::Johannesburg}}},
+        {City::Kolkata,(city_st){"Kolkata",Color::Black,{City::Delhi, City::Chennai, City::Bangkok, City::HongKong}}},
+        {City::Lagos,(city_st){"Lagos",Color::Yellow,{City::SaoPaulo, City::Khartoum, City::Kinshasa}}},
+        {City::Lima,(city_st){"Lima",Color::Yellow,{City::MexicoCity, City::Bogota, City::Santiago}}},
+        {City::London,(city_st){"London",Color::Blue,{City::NewYork, City::Madrid, City::Essen, City::Paris}}},
+        {City::LosAngeles,(city_st){"LosAngeles",Color::Yellow,{City::SanFrancisco, City::Chicago, City::MexicoCity, City::Sydney}}},
+        {City::Madrid,(city_st){"Madrid",Color::Blue,{City::London, City::NewYork, City::Paris, City::SaoPaulo, City::Algiers}}},
+        {City::Manila,(city_st){"Manila",Color::Red,{City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
+        {City::MexicoCity,(city_st){"MexicoCity",Color::Yellow,{City::LosAngeles, City::Chicago, City::Miami, City::Lima, City::Bogota}}},
+        {City::Miami,(city_st){"Miami",Color::Yellow,{City::Atlanta, City::MexicoCity, City::Washington, City::Bogota}}},
+        {City::Milan,(city_st){"Milan",Color::Blue,{City::Essen, City::Paris, City::Istanbul}}},
+        {City::Montreal,(city_st){"Montreal",Color::Blue,{City::Chicago, City::Washington, City::NewYork}}},
+        {City::Moscow,(city_st){"Moscow",Color::Black,{City::StPetersburg, City::Istanbul, City::Tehran}}},
+        {City::Mumbai,(city_st){"Mumbai",Color::Black,{City::Karachi, City::Delhi, City::Chennai}}},
+        {City::NewYork,(city_st){"NewYork",Color::Blue,{City::Montreal, City::Washington, City::London, City::Madrid}}},
+        {City::Osaka,(city_st){"Osaka",Color::Red,{City::Taipei, City::Tokyo}}},
+        {City::Paris,(city_st){"Paris",Color::Blue,{City::Algiers, City::Essen, City::Madrid, City::Milan, City::London}}},
+        {City::Riyadh,(city_st){"Riyadh",Color::Black,{City::Baghdad, City::Cairo, City::Karachi}}},
+        {City::SanFrancisco,(city_st){"SanFrancisco",Color::Blue,{City::LosAngeles, City::Chicago, City::Tokyo, City::Manila}}},
+        {City::Santiago,(city_st){"Santiago",Color::Yellow,{City::Lima}}},
+        {City::SaoPaulo,(city_st){"SaoPaulo",Color::Yellow,{City::Bogota, City::BuenosAires, City::Lagos, City::Madrid}}},
+        {City::Seoul,(city_st){"Seoul",Color::Red,{City::Beijing, City::Shanghai, City::Tokyo}}},
+        {City::Shanghai,(city_st){"Shanghai",Color::Red,{City::Beijing, City::HongKong, City::Taipei, City::Seoul, City::Tokyo}}},
+        {City::StPetersburg,(city_st){"StPetersburg",Color::Blue,{City::Essen, City::Istanbul, City::Moscow}}},
+        {City::Sydney,(city_st){"Sydney",Color::Red,{City::Jakarta, City::Manila, City::LosAngeles}}},
+        {City::Taipei,(city_st){"Taipei",Color::Red,{City::Shanghai, City::HongKong, City::Osaka, City::Manila}}},
+        {City::Tehran,(city_st){"Tehran",Color::Black,{City::Baghdad, City::Moscow, City::Karachi, City::Delhi}}},
+        {City::Tokyo,(city_st){"Tokyo",Color::Red,{City::Seoul, City::Shanghai, City::Osaka, City::SanFrancisco}}},
+		{City::Washington,(city_st){"Washington",Color::Blue,{City::Atlanta, City::NewYork, City::Montreal, City::Miami}}}
 	};
 	/* choose random 16 cities to be with research stations */
 	while (research_stations_cities.size()<16) {
-		auto it = cities.begin();
-		std::advance(it, (uint)rand() % cities.size());
+		auto it = cities_mp.begin();
+		std::advance(it, (uint)rand() % cities_mp.size());
 		research_stations_cities.insert(it->first);
     };
 }
@@ -109,9 +110,9 @@ Player get_new_player(Board& board, City city, string role, int n = 4) {
 /* for the purpose of discovering a cure for a city */
 Researcher five_cards_researcher(Board& board, City city) {
 	Researcher researcher(board, city);
-	Color color = cities[city].color;
+	Color color = cities_mp[city].color;
 	int counter = 0;
-	for (auto &c : cities) {
+	for (auto &c : cities_mp) {
 		if (c.second.color==color) counter++;
 		researcher.take_card(c.first);
 		if (counter==5) break;
@@ -130,7 +131,7 @@ void drive_test(Player& player, Board& board) {
 		Board b;
 		Medic medic{b, City::Algiers};
 		set<Color> auto_heal_cities;
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			/* choose 2 random medications (out of the 4) */
 			if (auto_heal_cities.size()<2&&auto_heal_cities.count(b[city.first].color)==0) {
 				auto_heal_cities.insert(b[city.first].color);
@@ -140,7 +141,7 @@ void drive_test(Player& player, Board& board) {
 			/* choose a random disease level from 1 to 9 to any city */
 			b[city.first] = (rand() % 9) + 1;
 		}
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			/* travel to any city */
 			Medic same_role_player(b, city.first);
 			/* If the disease in the current city has been treated */
@@ -152,9 +153,9 @@ void drive_test(Player& player, Board& board) {
 		}
 	}
 	/* Any-Player-Role Action */
-	for (auto &city : cities) {
+	for (auto &city : cities_mp) {
 		/* attempt to travel to a non-neighboring city */
-		for (auto &far_city : cities) {
+		for (auto &far_city : cities_mp) {
 			if (city.first!=far_city.first&&city.second.neighbors.count(far_city.first)==0) {
 				Player same_role_player = get_new_player(board, city.first, player.role());
 				same_role_player.take_card(far_city.first);
@@ -175,8 +176,8 @@ void drive_test(Player& player, Board& board) {
 /* should run build_test before this test (to build research stations) */
 /* Dispatcher Action */
 void fly_direct_test(Player& player, Board& board) {
-	for (auto &city : cities) {
-		for (auto &other_city : cities) {
+	for (auto &city : cities_mp) {
+		for (auto &other_city : cities_mp) {
 			Dispatcher same_role_player(board, city.first);
 			if (player.role()=="Dispatcher" && research_stations_cities.count(city.first)!=0) {
 				CHECK_NOTHROW(same_role_player.fly_direct(other_city.first));
@@ -184,8 +185,8 @@ void fly_direct_test(Player& player, Board& board) {
 		}
 	}
 	/* Other-Players Action (no special action when discovering cure) */
-	for (auto &city : cities) {
-		for (auto &other_city : cities) {
+	for (auto &city : cities_mp) {
+		for (auto &other_city : cities_mp) {
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			if (city.first==other_city.first) continue;
 			/* should throw an error (no card of destinition city) */
@@ -200,8 +201,8 @@ void fly_direct_test(Player& player, Board& board) {
 /* --------------------------- Fly Charter Test --------------------------- */
 // should take an empty board
 void fly_charter_test(Player& player, Board& board) {
-	for (auto &city : cities) {
-		for (auto &other_city : cities) {
+	for (auto &city : cities_mp) {
+		for (auto &other_city : cities_mp) {
 			if (city.first==other_city.first) continue;
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			/* should throw an error (no card of the current city) */
@@ -216,8 +217,8 @@ void fly_charter_test(Player& player, Board& board) {
 /* ------------------------- Build & Fly Shuttle Test ------------------------- */
 /* should run build_test before this test (to build research stations) */
 void fly_shuttle_test(Player& player, Board& board) {
-	for (auto &city : cities) {
-		for (auto &other_city : cities) {
+	for (auto &city : cities_mp) {
+		for (auto &other_city : cities_mp) {
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			if (research_stations_cities.count(city.first)==0||
 				research_stations_cities.count(other_city.first)==0) {
@@ -262,11 +263,11 @@ void build_and_fly_shuttle_test(Player& player, Board& board) {
 void discover_cure_test(Player& player, Board& board) {
 	/* Scientist Action */
 	if (player.role() == "Scientist") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			int iRand = (rand() % 9) + 1;
 			Scientist scientist(board, city.first, iRand);
 			int counter = 0;
-			for (auto &c : cities) {
+			for (auto &c : cities_mp) {
 				if (city.second.color==c.second.color) {
 					CHECK_THROWS(scientist.discover_cure(city.second.color));
 					scientist.take_card(c.first);
@@ -284,10 +285,10 @@ void discover_cure_test(Player& player, Board& board) {
 	}
 	/* Researcher Action */
 	if (player.role() == "Researcher") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			Researcher researcher(board, city.first);
 			int counter = 0;
-			for (auto &c : cities) {
+			for (auto &c : cities_mp) {
 				if (city.second.color==c.second.color) {
 					CHECK_THROWS(researcher.discover_cure(city.second.color));
 					researcher.take_card(c.first);
@@ -301,13 +302,13 @@ void discover_cure_test(Player& player, Board& board) {
 	}
 	/* GeneSplicer Action */
 	if (player.role() == "GeneSplicer") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			GeneSplicer geneSplicer(board, city.first);
 			int counter = 0;
 			set<City> cards{};
 			while (cards.size()<5) {
-				auto it = cities.begin();
-				std::advance(it, (uint)rand() % cities.size());
+				auto it = cities_mp.begin();
+				std::advance(it, (uint)rand() % cities_mp.size());
 				geneSplicer.take_card(it->first);
 				cards.insert(it->first);
 			}
@@ -321,27 +322,27 @@ void discover_cure_test(Player& player, Board& board) {
 		return;
 	}
 	/* Other-Players Action (no special action when discovering cure) */
-	for (auto &city : cities) {
+	for (auto &city : cities_mp) {
 		Player default_player = get_new_player(board, city.first, player.role());
 		if (research_stations_cities.count(city.first)!=0) {
 			int counter = 0;
-			for (auto &other_city : cities) {
+			for (auto &other_city : cities_mp) {
 				if (counter==5) {
-					CHECK_NOTHROW(default_player.discover_cure(cities[city.first].color));
+					CHECK_NOTHROW(default_player.discover_cure(cities_mp[city.first].color));
 					break;
-				} else if (city.first!=other_city.first&&cities[city.first].color==cities[other_city.first].color) {
-					CHECK_THROWS(default_player.discover_cure(cities[city.first].color));
+				} else if (city.first!=other_city.first&&cities_mp[city.first].color==cities_mp[other_city.first].color) {
+					CHECK_THROWS(default_player.discover_cure(cities_mp[city.first].color));
 					default_player.take_card(other_city.first);
 					counter++;
 				}
 			}
 			board.remove_cures();
 		} else {
-			for (auto &other_city : cities) {
+			for (auto &other_city : cities_mp) {
 				default_player.take_card(other_city.first);
 			}
-			for (auto &other_city : cities) {
-				CHECK_THROWS(default_player.discover_cure(cities[city.first].color));
+			for (auto &other_city : cities_mp) {
+				CHECK_THROWS(default_player.discover_cure(cities_mp[city.first].color));
 			}
 		}
 	}
@@ -351,7 +352,7 @@ void discover_cure_test(Player& player, Board& board) {
 void treat_test(Player& player, Board& board) {
 	/* Medic Action */
 	if (player.role()=="Medic") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			Medic same_role_player(board, city.first);
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
@@ -367,15 +368,15 @@ void treat_test(Player& player, Board& board) {
 	}
 	/* Virologist Action */
 	if (player.role()=="Virologist") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
 			board[city.first] = iRand;
 			/* should throw an error (medic set the disease to 0) */
-			auto it = cities.begin();
+			auto it = cities_mp.begin();
 			while (it->first==city.first) {
-				it = cities.begin();
-				std::advance(it, (uint)rand() % cities.size());
+				it = cities_mp.begin();
+				std::advance(it, (uint)rand() % cities_mp.size());
 			}
 			Virologist same_role_player(board, it->first);
 			/* should throw an error (no card) */
@@ -390,15 +391,15 @@ void treat_test(Player& player, Board& board) {
 	}
 	/* FieldDoctor Action */
 	if (player.role()=="FieldDoctor") {
-		for (auto &city : cities) {
+		for (auto &city : cities_mp) {
 			FieldDoctor same_role_player(board, city.first);
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
 			board[city.first] = iRand;
 			/* should throw an error (medic set the disease to 0) */
-			auto it = cities.begin();
-			it = cities.begin();
-			std::advance(it, (uint)rand() % cities.size());
+			auto it = cities_mp.begin();
+			it = cities_mp.begin();
+			std::advance(it, (uint)rand() % cities_mp.size());
 			board[it->first] = iRand;
 			if (city.first==it->first || board[city.first].neighbors.count(it->first)) {
 				/* should not throw an error (nearby city) */
@@ -411,7 +412,7 @@ void treat_test(Player& player, Board& board) {
 		return;
 	}
 	/* Other-Players Action */
-	for (auto &city : cities) {
+	for (auto &city : cities_mp) {
 		Player same_role_player = get_new_player(board, city.first, player.role());
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 		int iRand = (rand() % 9) + 1;

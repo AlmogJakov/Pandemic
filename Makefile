@@ -19,8 +19,8 @@ demo1: Demo1.o $(OBJECTS)
 
 demo2: Demo2.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o demo2
-
-test: TestCounter.o Test.o $(OBJECTS)
+# TestCounter.o
+test: Test.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o test
 
 tidy:
