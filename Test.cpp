@@ -87,6 +87,7 @@ void init() {
 		{City::Washington,(city_st){"Washington",Color::Blue,{City::Atlanta, City::NewYork, City::Montreal, City::Miami}}}
 	};
 	/* choose random 16 cities to be with research stations */
+	research_stations_cities.clear();
 	while (research_stations_cities.size()<16) {
 		auto it = cities_mp.begin();
 		std::advance(it, (uint)rand() % cities_mp.size());
