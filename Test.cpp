@@ -5,12 +5,12 @@
  */
 
 #include "doctest.h"
-
+/* include main classes */
 #include "Board.hpp"
 #include "City.hpp"
 #include "Color.hpp"
 #include "Player.hpp"
-
+/* include special skills players */
 #include "Researcher.hpp"
 #include "Scientist.hpp"
 #include "FieldDoctor.hpp"
@@ -19,14 +19,11 @@
 #include "Dispatcher.hpp"
 #include "Medic.hpp"
 #include "Virologist.hpp"
-
 using namespace pandemic;
-
 #include <iostream>
 #include <stdexcept>
 #include <map>
 #include <set>
-
 using namespace std;
 
 struct city_s {
