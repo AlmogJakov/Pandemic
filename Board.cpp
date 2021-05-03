@@ -36,7 +36,7 @@ namespace pandemic {
             {City::London,(city_struct){"London",Color::Blue,{City::NewYork, City::Madrid, City::Essen, City::Paris}}},
             {City::LosAngeles,(city_struct){"LosAngeles",Color::Yellow,{City::SanFrancisco, City::Chicago, City::MexicoCity, City::Sydney}}},
             {City::Madrid,(city_struct){"Madrid",Color::Blue,{City::London, City::NewYork, City::Paris, City::SaoPaulo, City::Algiers}}},
-            {City::Manila,(city_struct){"Manila",Color::Red,{City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
+            {City::Manila,(city_struct){"Manila",Color::Red,{City::HongKong, City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
             {City::MexicoCity,(city_struct){"MexicoCity",Color::Yellow,{City::LosAngeles, City::Chicago, City::Miami, City::Lima, City::Bogota}}},
             {City::Miami,(city_struct){"Miami",Color::Yellow,{City::Atlanta, City::MexicoCity, City::Washington, City::Bogota}}},
             {City::Milan,(city_struct){"Milan",Color::Blue,{City::Essen, City::Paris, City::Istanbul}}},

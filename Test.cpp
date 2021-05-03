@@ -3,7 +3,7 @@
  * 
  * Date: 2021-04
  */
-//#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
 /* include main classes */
@@ -25,6 +25,7 @@ using namespace pandemic;
 #include <stdexcept>
 #include <map>
 #include <set>
+#include <sstream>
 using namespace std;
 
 struct city_st {
@@ -63,7 +64,7 @@ void init() {
         {City::London,(city_st){"London",Color::Blue,{City::NewYork, City::Madrid, City::Essen, City::Paris}}},
         {City::LosAngeles,(city_st){"LosAngeles",Color::Yellow,{City::SanFrancisco, City::Chicago, City::MexicoCity, City::Sydney}}},
         {City::Madrid,(city_st){"Madrid",Color::Blue,{City::London, City::NewYork, City::Paris, City::SaoPaulo, City::Algiers}}},
-        {City::Manila,(city_st){"Manila",Color::Red,{City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
+        {City::Manila,(city_st){"Manila",Color::Red,{City::HongKong, City::Taipei, City::SanFrancisco, City::HoChiMinhCity, City::Sydney}}},
         {City::MexicoCity,(city_st){"MexicoCity",Color::Yellow,{City::LosAngeles, City::Chicago, City::Miami, City::Lima, City::Bogota}}},
         {City::Miami,(city_st){"Miami",Color::Yellow,{City::Atlanta, City::MexicoCity, City::Washington, City::Bogota}}},
         {City::Milan,(city_st){"Milan",Color::Blue,{City::Essen, City::Paris, City::Istanbul}}},
@@ -159,7 +160,7 @@ void drive_test(Player& player, Board& board) {
 		for (auto &far_city : cities_mp) {
 			if (city.first!=far_city.first&&city.second.neighbors.count(far_city.first)==0) {
 				Player same_role_player = get_new_player(board, city.first, player.role());
-				same_role_player.take_card(far_city.first);
+				//same_role_player.take_card(far_city.first);
 				/* should throw an error (non-neighboring cities) */
 				CHECK_THROWS(same_role_player.drive(far_city.first));
 			}
@@ -416,6 +417,7 @@ void treat_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
 		Player same_role_player = get_new_player(board, city.first, player.role());
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
+		board.remove_cures();
 		int iRand = (rand() % 9) + 1;
 		board[city.first] = iRand;
 		/* simulate a scenario where a cure is found (only for numbers greater than 5) */
