@@ -134,8 +134,8 @@ void drive_test(Player& player, Board& board) {
 		set<Color> auto_heal_cities;
 		for (auto &city : cities_mp) {
 			/* choose 2 random medications (out of the 4) */
-			if (auto_heal_cities.size()<2&&auto_heal_cities.count(b[city.first].color)==0) {
-				auto_heal_cities.insert(b[city.first].color);
+			if (auto_heal_cities.size()<2&&auto_heal_cities.count(city.second.color)==0) {
+				auto_heal_cities.insert(city.second.color);
 				Researcher researcher = five_cards_researcher(board, city.first);
 				researcher.discover_cure(city.second.color);
 			}
@@ -146,7 +146,7 @@ void drive_test(Player& player, Board& board) {
 			/* travel to any city */
 			Medic same_role_player(b, city.first);
 			/* If the disease in the current city has been treated */
-			if (auto_heal_cities.count(b[city.first].color)) {
+			if (auto_heal_cities.count(city.second.color)!=0) {
 				Player p{b, city.first};
 				/* should throw an error (presence of the medic already set the disease to 0) */
 				CHECK_THROWS(p.treat(city.first));
