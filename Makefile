@@ -20,7 +20,7 @@ demo1: Demo1.o $(OBJECTS)
 demo2: Demo2.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o demo2
 # TestCounter.o
-test: Test.o $(OBJECTS)
+test: TestCounter.o Test.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o test
 
 tidy:
