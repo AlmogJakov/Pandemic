@@ -39,6 +39,7 @@ int main() {
 		// NOTE: you do not have the Atlanta card, so for other roles this would throw an exception.
 		//       But for the OperationsExpert it is legal, since he may build a research station without a card.
 
+
 	/* drive action */
 
 	player.drive(City::Washington);  // legal action: you drive from Atlanta to a connected city.

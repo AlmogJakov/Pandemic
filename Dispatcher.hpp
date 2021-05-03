@@ -6,9 +6,10 @@
 
 namespace pandemic {
     class Dispatcher: public Player {
+        string Role() {return "Dispatcher";};
     public:
-        Dispatcher(Board b, City c): Player(b,c) {}
+        Dispatcher(Board& b, City c): Player(b,c) {}
         ~Dispatcher() { }
-        Player& fly_direct(City c) {return *this;};
+        Player& fly_direct(City c);
     };
 }

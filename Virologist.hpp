@@ -6,9 +6,10 @@
 
 namespace pandemic {
     class Virologist: public Player {
+        string Role() {return "Virologist";};
     public:
-        Virologist(Board b, City c): Player(b,c) {}
+        Virologist(Board& b, City c): Player(b,c) {}
         ~Virologist() { }
-        Player& treat(City c) {return *this;};
+        Virologist& treat(City c);
     };
 }

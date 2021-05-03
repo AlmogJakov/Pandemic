@@ -3,12 +3,14 @@
 #include "City.hpp"
 #include "Color.hpp"
 #include "Player.hpp"
+#include <sstream>
 
 namespace pandemic {
     class FieldDoctor: public Player {
+        string Role() {return "FieldDoctor";};
     public:
-        FieldDoctor(Board b, City c): Player(b,c) {}
+        FieldDoctor(Board& b, City c): Player(b,c) { }
         ~FieldDoctor() { }
-        Player& treat(City c) {return *this;};
+        Player& treat(City c);
     };
 }
