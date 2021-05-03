@@ -402,7 +402,7 @@ void treat_test(Player& player, Board& board) {
 			it = cities_mp.begin();
 			std::advance(it, (uint)rand() % cities_mp.size());
 			board[it->first] = iRand;
-			if (city.first==it->first || board[city.first].neighbors.count(it->first)) {
+			if (city.first==it->first || cities_mp[city.first].neighbors.count(it->first)) {
 				/* should not throw an error (nearby city) */
 				CHECK_NOTHROW(same_role_player.treat(it->first));
 			} else {
