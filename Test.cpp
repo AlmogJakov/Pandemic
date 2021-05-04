@@ -128,36 +128,6 @@ Researcher five_cards_researcher(Board& board, City city) {
 
 /* ---------------------------- Drive Test ---------------------------- */
 void drive_test(Player& player, Board& board) {
-	/* Medic Action (checks auto heal) */
-	if (player.role()=="Medic") {
-		Board b;
-		Medic medic{b, City::Algiers};
-		set<Color> auto_heal_cities;
-		for (auto &city : cities_mp) {
-			/* choose 2 random medications (out of the 4) */
-			if (auto_heal_cities.size()<2&&auto_heal_cities.count(city.second.color)==0) {
-				auto_heal_cities.insert(city.second.color);
-				Researcher researcher = five_cards_researcher(board, city.first);
-				researcher.discover_cure(city.second.color);
-			}
-			/* choose a random disease level from 1 to 9 to any city */
-			b[city.first] = (rand() % 9) + 1;
-		}
-		for (auto &city : cities_mp) {
-			/* travel to the city */
-			auto some_neighbor = city.second.neighbors.begin();
-			std::advance(some_neighbor, 0);
-			Medic same_role_player(b, *some_neighbor);
-			same_role_player.drive(city.first);
-			/* If the disease in the current city has been treated */
-			if (auto_heal_cities.count(city.second.color)!=0) {
-				Player p{b, city.first};
-				/* should throw an error (presence of the medic already set the disease to 0) */
-				CHECK_THROWS(p.treat(city.first));
-			}
-		}
-	}
-	/* Any-Player-Role Action */
 	for (auto &city : cities_mp) {
 		/* attempt to travel to a non-neighboring city */
 		for (auto &far_city : cities_mp) {
@@ -457,7 +427,57 @@ void treat_test(Player& player, Board& board) {
 	}
 }
 
-#include "Virologist.hpp"
+/* ------------------------- Medic Auto-heal Test ------------------------- */
+void medic_auto_heal_test(Player& player, Board& board) {
+	Board b;
+	Medic medic{b, City::Algiers};
+	set<Color> auto_heal_cities;
+	for (auto &city : cities_mp) {
+		/* choose 2 random medications (out of the 4) */
+		if (auto_heal_cities.size()<2&&auto_heal_cities.count(city.second.color)==0) {
+			auto_heal_cities.insert(city.second.color);
+			Researcher researcher = five_cards_researcher(board, city.first);
+			researcher.discover_cure(city.second.color);
+		}
+		/* choose a random disease level from 1 to 9 to any city */
+		b[city.first] = (rand() % 9) + 1;
+	}
+	/* travel to the city to set the disease to 0 by traveling (auto heal) */
+	for (auto &city : cities_mp) {
+		/* random way to go to the city (drive,fly_direct,fly_charter,fly_shuttle) */
+		int iRand = (rand() % 4) + 1;
+		/* go the one of the neighbors of the current city */
+		auto some_neighbor = city.second.neighbors.begin();
+		std::advance(some_neighbor, 0);
+		Medic same_role_player(b, *some_neighbor);
+		if (iRand==1) {
+			/* Checking the correctness of the auto-heal by driving to the city */
+			Medic same_role_player(b, *some_neighbor);
+			same_role_player.drive(city.first);
+		} else if (iRand==2) {
+			/* Checking the correctness of the auto-heal by fly_direct to the city */
+			same_role_player.take_card(city.first);
+			same_role_player.fly_direct(city.first);
+		} else if (iRand==3) {
+			/* Checking the correctness of the auto-heal by fly_charter to the city */
+			same_role_player.take_card(*some_neighbor);
+			same_role_player.fly_charter(city.first);
+		} else { /* iRand==4 */
+		/* Checking the correctness of the auto-heal by fly_shuttle to the city */
+			OperationsExpert b1(b, city.first);
+			b1.build();
+			OperationsExpert b2(b, *some_neighbor);
+			b2.build();
+			same_role_player.fly_shuttle(city.first);
+		}
+		/* If the disease in the current city has been treated */
+		if (auto_heal_cities.count(city.second.color)!=0) {
+			Player p{b, city.first};
+			/* should throw an error (presence of the medic already set the disease to 0) */
+			CHECK_THROWS(p.treat(city.first));
+		}
+	}
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -496,21 +516,8 @@ TEST_CASE("Researcher Test") {
 	init();
 	Board board;
 	Researcher player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("Researcher Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("Researcher Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("Researcher Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
 	SUBCASE("Researcher Discover Cure Test") {
 		discover_cure_test(player, board);
-	}
-	SUBCASE("Researcher Treat Test") {
-		treat_test(player, board);
 	}
 }
 
@@ -519,21 +526,10 @@ TEST_CASE("Scientist Test") {
 	init();
 	Board board;
 	Scientist player(board, City::Washington, 4);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("Scientist Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("Scientist Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("Scientist Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
+	/* Should build random research stations for discover_cure test */
+	build_test(player, board);
 	SUBCASE("Scientist Discover Cure Test") {
 		discover_cure_test(player, board);
-	}
-	SUBCASE("Scientist Treat Test") {
-		treat_test(player, board);
 	}
 }
 
@@ -542,19 +538,6 @@ TEST_CASE("FieldDoctor Test") {
 	init();
 	Board board;
 	FieldDoctor player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("FieldDoctor Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("FieldDoctor Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("FieldDoctor Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
-	SUBCASE("FieldDoctor Discover Cure Test") {
-		discover_cure_test(player, board);
-	}
 	SUBCASE("FieldDoctor Treat Test") {
 		treat_test(player, board);
 	}
@@ -565,21 +548,10 @@ TEST_CASE("GeneSplicer Test") {
 	init();
 	Board board;
 	GeneSplicer player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("GeneSplicer Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("GeneSplicer Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("GeneSplicer Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
+	/* Should build random research stations for discover_cure test */
+	build_test(player, board);
 	SUBCASE("GeneSplicer Discover Cure Test") {
 		discover_cure_test(player, board);
-	}
-	SUBCASE("GeneSplicer Treat Test") {
-		treat_test(player, board);
 	}
 }
 
@@ -589,21 +561,6 @@ TEST_CASE("OperationsExpert Test") {
 	Board board;
 	OperationsExpert player(board, City::Washington);
 	build_and_fly_shuttle_test(player, board);
-	SUBCASE("OperationsExpert Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("OperationsExpert Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("OperationsExpert Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
-	SUBCASE("OperationsExpert Discover Cure Test") {
-		discover_cure_test(player, board);
-	}
-	SUBCASE("OperationsExpert Treat Test") {
-		treat_test(player, board);
-	}
 }
 
 TEST_CASE("Dispatcher Test") {
@@ -611,21 +568,10 @@ TEST_CASE("Dispatcher Test") {
 	init();
 	Board board;
 	Dispatcher player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("Dispatcher Drive Test") {
-		drive_test(player, board);
-	}
+	/* Should build random research stations for fly_direct test */
+	build_test(player, board);
 	SUBCASE("Dispatcher Fly Direct Test") {
 		fly_direct_test(player, board);
-	}
-	SUBCASE("Dispatcher Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
-	SUBCASE("Dispatcher Discover Cure Test") {
-		discover_cure_test(player, board);
-	}
-	SUBCASE("Dispatcher Treat Test") {
-		treat_test(player, board);
 	}
 }
 
@@ -634,21 +580,11 @@ TEST_CASE("Medic Test") {
 	init();
 	Board board;
 	Medic player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("Medic Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("Medic Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("Medic Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
-	SUBCASE("Medic Discover Cure Test") {
-		discover_cure_test(player, board);
-	}
 	SUBCASE("Medic Treat Test") {
 		treat_test(player, board);
+	}
+	SUBCASE("Medic Auto-heal Test") {
+		medic_auto_heal_test(player, board);
 	}
 }
 
@@ -657,19 +593,6 @@ TEST_CASE("Virologist Test") {
 	init();
 	Board board;
 	Virologist player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
-	SUBCASE("Virologist Drive Test") {
-		drive_test(player, board);
-	}
-	SUBCASE("Virologist Fly Direct Test") {
-		fly_direct_test(player, board);
-	}
-	SUBCASE("Virologist Fly Charter Test") {
-		fly_charter_test(player, board);
-	}
-	SUBCASE("Virologist Discover Cure Test") {
-		discover_cure_test(player, board);
-	}
 	SUBCASE("Virologist Treat Test") {
 		treat_test(player, board);
 	}

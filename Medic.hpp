@@ -16,10 +16,12 @@ namespace pandemic {
                 {Color::Black,b.medicines.count(Color::Black)},
                 {Color::Red,b.medicines.count(Color::Red)}
             };
-            if (b.medicines.count(b[c].color)) {b[c].disease = 0;}
         }
         ~Medic() { }
         Player& drive(City c);
+        Player& fly_direct(City c);
+        Player& fly_charter(City c);
+        Player& fly_shuttle(City c);
         Player& treat(City c);
     };
 }
