@@ -144,8 +144,11 @@ void drive_test(Player& player, Board& board) {
 			b[city.first] = (rand() % 9) + 1;
 		}
 		for (auto &city : cities_mp) {
-			/* travel to any city */
-			Medic same_role_player(b, city.first);
+			/* travel to the city */
+			auto some_neighbor = city.second.neighbors.begin();
+			std::advance(some_neighbor, 0);
+			Medic same_role_player(b, *some_neighbor);
+			same_role_player.drive(city.first);
 			/* If the disease in the current city has been treated */
 			if (auto_heal_cities.count(city.second.color)!=0) {
 				Player p{b, city.first};
