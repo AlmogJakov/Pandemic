@@ -35,6 +35,7 @@ struct city_st {
 };
 map<City,city_st> cities_mp;
 set<City> research_stations_cities;
+set<City> cities_to_test;
 void init() {
 	/* init cities map */
 	cities_mp = {
@@ -94,6 +95,13 @@ void init() {
 		std::advance(it, (uint)rand() % cities_mp.size());
 		research_stations_cities.insert(it->first);
     };
+	/* choose random 16 cities to test */
+	cities_to_test.clear();
+	while (cities_to_test.size()<16) {
+		auto it = cities_mp.begin();
+		std::advance(it, (uint)rand() % cities_mp.size());
+		cities_to_test.insert(it->first);
+    };
 }
 
 /* return new player according to the input ('n' variable used only for Scientist constructor) */
@@ -129,6 +137,7 @@ Researcher five_cards_researcher(Board& board, City city) {
 /* ---------------------------- Drive Test ---------------------------- */
 void drive_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		/* attempt to travel to a non-neighboring city */
 		for (auto &far_city : cities_mp) {
 			if (city.first!=far_city.first&&city.second.neighbors.count(far_city.first)==0) {
@@ -152,6 +161,7 @@ void drive_test(Player& player, Board& board) {
 /* Dispatcher Action */
 void fly_direct_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
 			Dispatcher same_role_player(board, city.first);
 			if (player.role()=="Dispatcher" && research_stations_cities.count(city.first)!=0) {
@@ -177,6 +187,7 @@ void fly_direct_test(Player& player, Board& board) {
 // should take an empty board
 void fly_charter_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
 			if (city.first==other_city.first) continue;
 			Player same_role_player = get_new_player(board, city.first, player.role());
@@ -193,6 +204,7 @@ void fly_charter_test(Player& player, Board& board) {
 /* should run build_test before this test (to build research stations) */
 void fly_shuttle_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			if (research_stations_cities.count(city.first)==0||
@@ -239,6 +251,7 @@ void discover_cure_test(Player& player, Board& board) {
 	/* Scientist Action */
 	if (player.role() == "Scientist") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			/* n = Random number from 1 to 5 */
 			int iRand = (rand() % 5) + 1;
 			Scientist scientist(board, city.first, iRand);
@@ -262,6 +275,7 @@ void discover_cure_test(Player& player, Board& board) {
 	/* Researcher Action */
 	if (player.role() == "Researcher") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			Researcher researcher(board, city.first);
 			int counter = 0;
 			for (auto &c : cities_mp) {
@@ -279,6 +293,7 @@ void discover_cure_test(Player& player, Board& board) {
 	/* GeneSplicer Action */
 	if (player.role() == "GeneSplicer") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			GeneSplicer geneSplicer(board, city.first);
 			int counter = 0;
 			set<City> cards{};
@@ -299,6 +314,7 @@ void discover_cure_test(Player& player, Board& board) {
 	}
 	/* Other-Players Action (no special action when discovering cure) */
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		Player default_player = get_new_player(board, city.first, player.role());
 		if (research_stations_cities.count(city.first)!=0) {
 			int counter = 0;
@@ -329,6 +345,7 @@ void treat_test(Player& player, Board& board) {
 	/* Medic Action */
 	if (player.role()=="Medic") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			Medic same_role_player(board, city.first);
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
@@ -345,6 +362,7 @@ void treat_test(Player& player, Board& board) {
 	/* Virologist Action */
 	if (player.role()=="Virologist") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
 			board[city.first] = iRand;
@@ -368,6 +386,7 @@ void treat_test(Player& player, Board& board) {
 	/* FieldDoctor Action */
 	if (player.role()=="FieldDoctor") {
 		for (auto &city : cities_mp) {
+			if (cities_to_test.count(city.first)==0) continue;
 			FieldDoctor same_role_player(board, city.first);
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
@@ -389,6 +408,7 @@ void treat_test(Player& player, Board& board) {
 	}
 	/* Other-Players Action */
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		Player same_role_player = get_new_player(board, city.first, player.role());
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 		board.remove_cures();
@@ -433,6 +453,7 @@ void medic_auto_heal_test(Player& player, Board& board) {
 	Medic medic{b, City::Algiers};
 	set<Color> auto_heal_cities;
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		/* choose 2 random medications (out of the 4) */
 		if (auto_heal_cities.size()<2&&auto_heal_cities.count(city.second.color)==0) {
 			auto_heal_cities.insert(city.second.color);
@@ -444,6 +465,7 @@ void medic_auto_heal_test(Player& player, Board& board) {
 	}
 	/* travel to the city to set the disease to 0 by traveling (auto heal) */
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		/* random way to go to the city (drive,fly_direct,fly_charter,fly_shuttle) */
 		int iRand = (rand() % 4) + 1;
 		/* go the one of the neighbors of the current city */
