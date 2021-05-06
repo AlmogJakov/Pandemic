@@ -171,6 +171,7 @@ void fly_direct_test(Player& player, Board& board) {
 	}
 	/* Other-Players Action (no special action when discovering cure) */
 	for (auto &city : cities_mp) {
+		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			if (city.first==other_city.first) continue;
@@ -189,7 +190,6 @@ void fly_charter_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
-			if (city.first==other_city.first) continue;
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			/* should throw an error (no card of the current city) */
 			CHECK_THROWS(same_role_player.fly_charter(other_city.first));
