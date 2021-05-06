@@ -113,8 +113,7 @@ Player get_new_player(Board& board, City city, string role, int n = 4) {
 	if (role == "OperationsExpert") return OperationsExpert{board,city};
 	if (role == "Dispatcher") return Dispatcher{board,city};
 	if (role == "Medic") return Medic{board,city};
-	if (role == "Virologist") return Virologist{board,city};
-	return Player{board,city};
+	else return Virologist{board,city};
 }
 
 /* for the purpose of discovering a cure for a city */
@@ -354,7 +353,7 @@ void treat_test(Player& player, Board& board) {
 			/* should not throw an error (medic set the disease to 0) */
 			CHECK_NOTHROW(same_role_player.treat(city.first));
 			/* default player */
-			Player p{board, city.first};
+			Dispatcher p{board, city.first};
 			/* should throw an error (medic already set the disease to 0) */
 			CHECK_THROWS(p.treat(city.first));
 		}
@@ -367,7 +366,6 @@ void treat_test(Player& player, Board& board) {
 			/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 			int iRand = (rand() % 9) + 1;
 			board[city.first] = iRand;
-			/* should throw an error (medic set the disease to 0) */
 			auto it = cities_mp.begin();
 			while (it->first==city.first) {
 				it = cities_mp.begin();
@@ -376,7 +374,6 @@ void treat_test(Player& player, Board& board) {
 			Virologist same_role_player(board, it->first);
 			/* should throw an error (no card) */
 			CHECK_THROWS(same_role_player.treat(city.first));
-			Player p{board, city.first};
 			/* take the card */
 			same_role_player.take_card(city.first);
 			/* should not throw an error (card taken) */
@@ -495,7 +492,7 @@ void medic_auto_heal_test(Player& player, Board& board) {
 		}
 		/* If the disease in the current city has been treated */
 		if (auto_heal_cities.count(city.second.color)!=0) {
-			Player p{b, city.first};
+			Dispatcher p{b, city.first};
 			/* should throw an error (presence of the medic already set the disease to 0) */
 			CHECK_THROWS(p.treat(city.first));
 		}
@@ -511,11 +508,11 @@ void medic_auto_heal_test(Player& player, Board& board) {
 /////////////// |________________________________________| ///////////////
 //////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Player Test") {
+TEST_CASE("No-Special-Skills Test") {
 	/* init */
 	init();
 	Board board;
-	Player player(board, City::Washington);
+	FieldDoctor player(board, City::Washington);
 	build_and_fly_shuttle_test(player, board);
 	SUBCASE("Player Drive Test") {
 		drive_test(player, board);
@@ -529,6 +526,14 @@ TEST_CASE("Player Test") {
 	SUBCASE("Player Discover Cure Test") {
 		discover_cure_test(player, board);
 	}
+	
+}
+
+TEST_CASE("No-Special-Skills Test2") {
+	/* init */
+	init();
+	Board board;
+	OperationsExpert player(board, City::Washington);
 	SUBCASE("Player Treat Test") {
 		treat_test(player, board);
 	}
