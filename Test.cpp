@@ -95,9 +95,9 @@ void init() {
 		std::advance(it, (uint)rand() % cities_mp.size());
 		research_stations_cities.insert(it->first);
     };
-	/* choose random 16 cities to test */
+	/* choose random 10 cities to test */
 	cities_to_test.clear();
-	while (cities_to_test.size()<16) {
+	while (cities_to_test.size()<10) {
 		auto it = cities_mp.begin();
 		std::advance(it, (uint)rand() % cities_mp.size());
 		cities_to_test.insert(it->first);
@@ -190,6 +190,7 @@ void fly_charter_test(Player& player, Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
+			if (city.first==other_city.first) continue;
 			Player same_role_player = get_new_player(board, city.first, player.role());
 			/* should throw an error (no card of the current city) */
 			CHECK_THROWS(same_role_player.fly_charter(other_city.first));
