@@ -165,7 +165,12 @@ void dispatcher_fly_direct_test(Player& player, Board& board) {
 		for (auto &other_city : cities_mp) {
 			Dispatcher same_role_player(board, city.first);
 			if (research_stations_cities.count(city.first)!=0) {
-				CHECK_NOTHROW(same_role_player.fly_direct(other_city.first));
+				if (city.first==other_city.first) {
+					/* should throw an error (cannot fly from city to it self) */
+					CHECK_THROWS(same_role_player.fly_direct(other_city.first));
+				} else {
+					CHECK_NOTHROW(same_role_player.fly_direct(other_city.first));
+				}
 			}
 		}
 	}
@@ -220,7 +225,7 @@ void fly_shuttle_test(Player& player, Board& board) {
 				CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
 			} else {
 				if (city.first==other_city.first) {
-					/* should throw an error (cannot drive from city to it self) */
+					/* should throw an error (cannot fly from city to it self) */
 					CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
 				} else {
 					/* should not throw an error (both cities have a research station) */
