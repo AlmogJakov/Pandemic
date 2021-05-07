@@ -219,8 +219,13 @@ void fly_shuttle_test(Player& player, Board& board) {
 				/* should throw an error (no research station in src/dest city) */
 				CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
 			} else {
-				/* should not throw an error (both cities have a research station) */
-				CHECK_NOTHROW(same_role_player.fly_shuttle(other_city.first));
+				if (city.first==other_city.first) {
+					/* should throw an error (cannot drive from city to it self) */
+					CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
+				} else {
+					/* should not throw an error (both cities have a research station) */
+					CHECK_NOTHROW(same_role_player.fly_shuttle(other_city.first));
+				}
 			}
 	    }
 	}
