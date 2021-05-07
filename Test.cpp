@@ -466,7 +466,7 @@ void medic_auto_heal_test(Player& player, Board& board) {
 		/* choose 2 random medications (out of the 4) */
 		if (auto_heal_cities.size()<2&&auto_heal_cities.count(city.second.color)==0) {
 			auto_heal_cities.insert(city.second.color);
-			Researcher researcher = five_cards_researcher(board, city.first);
+			Researcher researcher = five_cards_researcher(b, city.first);
 			researcher.discover_cure(city.second.color);
 		}
 		/* choose a random disease level from 1 to 9 to any city */
