@@ -66,6 +66,7 @@ namespace pandemic {
             {Color::Black,false},
             {Color::Red,false}
         };
+        diseases = {};
     }
 
     /* get the color as string from city_struct object */
@@ -77,20 +78,14 @@ namespace pandemic {
     }
 
     bool Board::is_clean() {
-        for (const auto &p : cities) {
-                if (p.second.disease>0) {return false;}
+        for (auto &p : cities) {
+                if (diseases.count(p.first)!=0&&diseases[p.first]>0) {return false;}
         }
         return true;
     }
 
-    /* output operator for city_struct object */
-    ostream& operator<<(ostream& os, const city_struct& s) {
-        return os << s.disease;
-        //return os << "City: " << s.city << ", Color = " << get_color(s);
-    };
-
     /* output operator for Board object */
-    ostream& operator<<(ostream& os, const Board& b) {
+    ostream& operator<<(ostream& os, Board& b) {
         const char separator    = ' ';
         const char lineSign    = '_';
         const int nameWidth     = 13;
@@ -102,7 +97,7 @@ namespace pandemic {
         os << left << setw(lineWidth) << setfill(lineSign) << "" << endl;
         int counter = 0;
         for (const auto &p : b.cities) {
-            os << left << setw(nameWidth) << setfill(separator) << p.second.city << ":" << setw(numWidth) << setfill(separator) << p.second.disease << "| ";
+            os << left << setw(nameWidth) << setfill(separator) << p.second.city << ":" << setw(numWidth) << setfill(separator) << b[p.first] << "| ";
             if ((++counter)%3==0) {os << endl;}
         }
         os << left << setw(lineWidth) << setfill(lineSign) << "" << "|" << endl;

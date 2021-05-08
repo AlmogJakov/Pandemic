@@ -8,17 +8,12 @@
 namespace pandemic {
     class Player {
     protected:
-        virtual string Role() {return "Player";};
         pandemic::Board& board;
+        string my_role;
         City city;
         set<City> cards = { };
-        /* Providing access to private variables (board, cards etc.) for special skills players */
-        /* (special skills players can not inherit board class friendship from player class in C++) */
     public:
-        Player(Board& b, City c): board(b) {
-            board = b;
-            city = c;
-        }
+        Player(Board& b, City c, string r): board(b), city(c), my_role(r) { }
         ~Player() { }
         virtual Player& drive(City c);
         virtual Player& fly_direct(City c);
@@ -27,7 +22,7 @@ namespace pandemic {
         virtual Player& build();
         virtual Player& discover_cure(Color c);
         virtual Player& treat(City c);
-        string role();
+        string role() {return my_role;}
         Player& take_card(City c);
     };
 }

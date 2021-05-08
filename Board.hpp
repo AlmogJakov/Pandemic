@@ -12,35 +12,36 @@ namespace pandemic {
         string city;
         Color color;
         set<City> neighbors;
-        int disease = 0;
         bool research_station = false;
-        void operator=(const int n) {disease = n;}
-        friend ostream& operator<<(ostream& os, const city_struct& s);
     };
 
     class Board {
+    public:
+        /* key: city enum. value: city name as string, city color, city neighbors  */
         map<City,city_struct> cities;
+        /* key: city enum. value: city disease number  */
+        map<City,int> diseases;
+        /* key: c/city color. value: boolean (true: medicin found)  */
+        map<Color,bool> medicines;
         int research_stations = 0;
         int medicines_count = 0;
-        map<Color,bool> medicines;
-        /* Providing access to private variables (board, medicines etc.) for the players */
-        /* (players with special skills can not inherit the friendship from Player class in C++) */
-        friend class Player;
-        friend class Researcher;
-        friend class Scientist;
-        friend class FieldDoctor;
-        friend class GeneSplicer;
-        friend class OperationsExpert;
-        friend class Dispatcher;
-        friend class Medic;
-        friend class Virologist;
-    public:
+        /* constructor/destructor */
         Board();
         ~Board() { }
-        city_struct& operator[](City city) {return cities[city];};
-        friend ostream& operator<<(ostream& os, const Board& b);
+        /* [] operator for getting disease integer reference */
+        int& operator[](City city) {
+            if (this->diseases[city]==0) {this->diseases[city] = 0;}
+            return this->diseases[city];
+        };
+        /* () operator for getting city struct */
+        city_struct& operator()(City city) {return cities.at(city);};
+        /* << board output operator */
+        friend ostream& operator<<(ostream& os, Board& b);
+        /* removing all cures */
         void remove_cures() {for (auto &cure : medicines) {cure.second = false;}};
+        /* returning boolean (true: no disease at all) */
         bool is_clean();
+        /* getting any color enum as string */
         string get_color(Color c);
     };
 }

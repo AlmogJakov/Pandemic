@@ -29,7 +29,7 @@ namespace pandemic {
         London, // Blue {NewYork Madrid Essen Paris}
         LosAngeles, // Yellow {SanFrancisco Chicago MexicoCity Sydney}
         Madrid, // Blue {HongKong London NewYork Paris SaoPaulo Algiers}
-        Manila, // Red {Taipei SanFrancisco HoChiMinhCity Sydney}
+        Manila, // Red {HongKong Taipei SanFrancisco HoChiMinhCity Sydney}
         MexicoCity, // Yellow {LosAngeles Chicago Miami Lima Bogota}
         Miami, // Yellow {Atlanta MexicoCity Washington Bogota}
         Milan, // Blue {Essen Paris Istanbul}

@@ -7,16 +7,8 @@
 namespace pandemic {
     class Medic: public Player {
         string Role() {return "Medic";};
-        map<Color,bool> auto_heal;
     public:
-        Medic(Board& b, City c): Player(b,c) {
-            auto_heal = {
-                {Color::Blue,b.medicines.count(Color::Blue)},
-                {Color::Yellow,b.medicines.count(Color::Yellow)},
-                {Color::Black,b.medicines.count(Color::Black)},
-                {Color::Red,b.medicines.count(Color::Red)}
-            };
-        }
+        Medic(Board& b, City c): Player(b,c,"Medic") { }
         ~Medic() { }
         Player& drive(City c);
         Player& fly_direct(City c);

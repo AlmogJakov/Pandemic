@@ -6,7 +6,6 @@ const int five_cards = 5;
 
 namespace pandemic {
     Player& GeneSplicer::discover_cure(Color c) {
-        //cout << "GeneSplicer:" << board.board[this->city].research_station << endl;
         if (!board.cities[this->city].research_station || this->cards.size()<five_cards) {
             stringstream ss;
             ss << "cannot discover_cure in " << board.cities[this->city].city;

@@ -8,7 +8,7 @@ namespace pandemic {
     class OperationsExpert: public Player {
         string Role() {return "OperationsExpert";};
     public:
-        OperationsExpert(Board& b, City c): Player(b,c) { }
+        OperationsExpert(Board& b, City c): Player(b,c,"OperationsExpert") { }
         ~OperationsExpert() { }
         Player& build();
     };

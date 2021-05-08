@@ -6,7 +6,7 @@ const int five_cards = 5;
 
 namespace pandemic {
     Player& Player::drive(City c) {
-        if (board.cities[this->city].neighbors.count(c)==0) {
+        if (this->city==c || board.cities[this->city].neighbors.count(c)==0) {
             stringstream ss;
             ss << "cannot drive from " << board.cities[this->city].city << " to " << board.cities[c].city;
             throw invalid_argument(ss.str());
@@ -16,29 +16,30 @@ namespace pandemic {
     };
 
     Player& Player::fly_direct(City c) {
-        if (this->cards.count(c)==0) {
+        if (this->city == c || this->cards.count(c)==0) {
             stringstream ss;
             ss << "cannot drive from " << board.cities[this->city].city << " to " << board.cities[c].city;
             throw invalid_argument(ss.str());
         }
+        
         this->city = c;
         this->cards.erase(c);
         return *this;
     };
 
     Player& Player::fly_charter(City c) {
-        if (this->cards.count(this->city)==0) {
+        if (this->city == c || this->cards.count(this->city)==0) {
             stringstream ss;
             ss << "cannot drive from " << board.cities[this->city].city << " to " << board.cities[c].city;
             throw invalid_argument(ss.str());
         }
-        this->city = c;
         this->cards.erase(this->city);
+        this->city = c;
         return *this;
     };
 
     Player& Player::fly_shuttle(City c) {
-        if (!board.cities[this->city].research_station || !board.cities[c].research_station) {
+        if (this->city == c || !board.cities[this->city].research_station || !board.cities[c].research_station) {
             stringstream ss;
             ss << "cannot drive from " << board.cities[this->city].city << " to " << board.cities[c].city;
             throw invalid_argument(ss.str());
@@ -48,6 +49,9 @@ namespace pandemic {
     };
 
     Player& Player::build() {
+        if (board.cities[this->city].research_station) {
+            return *this;
+        }
         if (this->cards.count(this->city)==0) {
             stringstream ss;
             ss << "cannot build research station to " << board.cities[this->city].city;
@@ -58,12 +62,10 @@ namespace pandemic {
             this->board.research_stations++;
             board.cities[this->city].research_station = true;
         }
-        //cout << "BUILD:" << board.board[this->city].research_station << endl;
         return *this;
     };
 
     Player& Player::discover_cure(Color c) {
-        //cout << "Player:" << board.board[this->city].research_station << endl;
         int colors = 0;
         for (auto city : this->cards) {
             if (board.cities[city].color==c) {colors++;}
@@ -90,21 +92,17 @@ namespace pandemic {
     };
 
     Player& Player::treat(City c) {
-        if (this->city!=c || board[this->city].disease == 0) {
+        if (this->city!=c || board[this->city] == 0) {
             stringstream ss;
             ss << "cannot treat " << board.cities[c].city;
             throw invalid_argument(ss.str());
         }
         if (board.medicines[board.cities[this->city].color]) {
-            board.cities[this->city].disease = 0;
+            board[this->city] = 0;
             return *this;
         }
-        board.cities[this->city].disease--;
+        board[this->city]--;
         return *this;
-    };
-
-    string Player::role() {
-        return Role();
     };
 
     Player& Player::take_card(City c) {
