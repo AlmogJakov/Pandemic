@@ -104,18 +104,6 @@ void init() {
     };
 }
 
-// /* return new player according to the input ('n' variable used only for Scientist constructor) */
-// Player& get_new_player(Board& board, City city, string role, int n = 4) {
-// 	if (role == "Researcher") return Researcher{board,city};
-// 	if (role == "Scientist")  return Scientist{board,city,n};
-// 	if (role == "FieldDoctor") return FieldDoctor{board,city};
-// 	if (role == "GeneSplicer") return GeneSplicer{board,city};
-// 	if (role == "OperationsExpert") return OperationsExpert{board,city};
-// 	if (role == "Dispatcher") return Dispatcher{board,city};
-// 	if (role == "Medic") return Medic{board,city};
-// 	else return Virologist{board,city};
-// }
-
 /* for the purpose of discovering a cure for a city */
 Researcher five_cards_researcher(Board& board, City city) {
 	Researcher researcher(board, city);
@@ -134,24 +122,22 @@ Researcher five_cards_researcher(Board& board, City city) {
 //////////////////////////////////////////////////////////////////////////
 
 /* ---------------------------- Drive Test ---------------------------- */
-void drive_test(Player& player, Board& board) {
+void drive_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		/* attempt to travel to a non-neighboring city */
 		for (auto &far_city : cities_mp) {
 			if (city.first!=far_city.first&&city.second.neighbors.count(far_city.first)==0) {
-				//Player same_role_player = get_new_player(board, city.first, player.role());
-				GeneSplicer same_role_player{board, city.first};
+				GeneSplicer some_player{board, city.first};
 				/* should throw an error (non-neighboring cities) */
-				CHECK_THROWS(same_role_player.drive(far_city.first));
+				CHECK_THROWS(some_player.drive(far_city.first));
 			}
 	    }
 		/* attempt to travel to a neighboring city */
 		for (auto &neighbor : city.second.neighbors) {
-			//Player same_role_player = get_new_player(board, city.first, player.role());
-			GeneSplicer same_role_player{board, city.first};
+			GeneSplicer some_player{board, city.first};
 			/* should not throw an error (iteration of the neighbors) */
-			CHECK_NOTHROW(same_role_player.drive(neighbor));
+			CHECK_NOTHROW(some_player.drive(neighbor));
 	    }
 	}
 }
@@ -159,17 +145,17 @@ void drive_test(Player& player, Board& board) {
 /* --------------------------- Fly Direct Test --------------------------- */
 /* should run build_test before this test (to build research stations) */
 /* Dispatcher Action */
-void dispatcher_fly_direct_test(Player& player, Board& board) {
+void dispatcher_fly_direct_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
-			Dispatcher same_role_player(board, city.first);
+			Dispatcher some_player(board, city.first);
 			if (research_stations_cities.count(city.first)!=0) {
 				if (city.first==other_city.first) {
 					/* should throw an error (cannot fly from city to it self) */
-					CHECK_THROWS(same_role_player.fly_direct(other_city.first));
+					CHECK_THROWS(some_player.fly_direct(other_city.first));
 				} else {
-					CHECK_NOTHROW(same_role_player.fly_direct(other_city.first));
+					CHECK_NOTHROW(some_player.fly_direct(other_city.first));
 				}
 			}
 		}
@@ -177,59 +163,56 @@ void dispatcher_fly_direct_test(Player& player, Board& board) {
 	return;
 }
 /* Other-Players Action (no special action when discovering cure) */
-void fly_direct_test(Player& player, Board& board) {
+void fly_direct_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
-			//Player same_role_player = get_new_player(board, city.first, player.role());
-			Medic same_role_player{board, city.first};
+			Medic some_player{board, city.first};
 			if (city.first==other_city.first) continue;
 			/* should throw an error (no card of destinition city) */
-			CHECK_THROWS(same_role_player.fly_direct(other_city.first));
-			same_role_player.take_card(other_city.first);
+			CHECK_THROWS(some_player.fly_direct(other_city.first));
+			some_player.take_card(other_city.first);
 			/* should not throw an error (card taken) */
-			CHECK_NOTHROW(same_role_player.fly_direct(other_city.first));
+			CHECK_NOTHROW(some_player.fly_direct(other_city.first));
 	    }
 	}
 }
 
 /* --------------------------- Fly Charter Test --------------------------- */
 // should take an empty board
-void fly_charter_test(Player& player, Board& board) {
+void fly_charter_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
 			if (city.first==other_city.first) continue;
-			//Player same_role_player = get_new_player(board, city.first, player.role());
-			Researcher same_role_player{board, city.first};
+			Researcher some_player{board, city.first};
 			/* should throw an error (no card of the current city) */
-			CHECK_THROWS(same_role_player.fly_charter(other_city.first));
-			same_role_player.take_card(city.first);
+			CHECK_THROWS(some_player.fly_charter(other_city.first));
+			some_player.take_card(city.first);
 			/* should not throw an error (card taken) */
-			CHECK_NOTHROW(same_role_player.fly_charter(other_city.first));
+			CHECK_NOTHROW(some_player.fly_charter(other_city.first));
 	    }
 	}
 }
 
 /* ------------------------- Build & Fly Shuttle Test ------------------------- */
 /* should run build_test before this test (to build research stations) */
-void fly_shuttle_test(Player& player, Board& board) {
+void fly_shuttle_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		for (auto &other_city : cities_mp) {
-			//Player same_role_player = get_new_player(board, city.first, player.role());
-			FieldDoctor same_role_player{board, city.first};
+			FieldDoctor some_player{board, city.first};
 			if (research_stations_cities.count(city.first)==0||
 				research_stations_cities.count(other_city.first)==0) {
 				/* should throw an error (no research station in src/dest city) */
-				CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
+				CHECK_THROWS(some_player.fly_shuttle(other_city.first));
 			} else {
 				if (city.first==other_city.first) {
 					/* should throw an error (cannot fly from city to it self) */
-					CHECK_THROWS(same_role_player.fly_shuttle(other_city.first));
+					CHECK_THROWS(some_player.fly_shuttle(other_city.first));
 				} else {
 					/* should not throw an error (both cities have a research station) */
-					CHECK_NOTHROW(same_role_player.fly_shuttle(other_city.first));
+					CHECK_NOTHROW(some_player.fly_shuttle(other_city.first));
 				}
 			}
 	    }
@@ -237,7 +220,7 @@ void fly_shuttle_test(Player& player, Board& board) {
 }
 
 /* build research stations only for the cities generated randomly by init() method */
-void operationsExpert_build_test(Player& player, Board& board) {
+void operationsExpert_build_test(Board& board) {
 	/* OperationsExpert Action */
 	for (auto &city : research_stations_cities) {
 		OperationsExpert same_player_role(board, city);
@@ -245,10 +228,9 @@ void operationsExpert_build_test(Player& player, Board& board) {
 		CHECK_NOTHROW(same_player_role.build());
 	}
 }
-void build_test(Player& player, Board& board) {
+void build_test(Board& board) {
 	for (auto &city : research_stations_cities) {
 		/* Default-Player Action */
-		//Player same_player_role = get_new_player(board, city, player.role());
 		Virologist same_player_role{board, city};
 		/* should throw an error (no card) */
 		CHECK_THROWS(same_player_role.build());
@@ -258,16 +240,17 @@ void build_test(Player& player, Board& board) {
 	}
 }
 
-void build_and_fly_shuttle_test(Player& player, Board& board) {
+void build_and_fly_shuttle_test(Board& board) {
+	FieldDoctor player(board, City::Washington);
 	/* build random research stations */
-	build_test(player, board);
+	build_test(board);
 	/* pass the player (any type of player should behave the same way in fly_shuttle method) */
-	fly_shuttle_test(player, board);
+	fly_shuttle_test(board);
 }
 
 /* ---------------------------- Discover Cure Test ---------------------------- */
 /* Scientist Action */
-void scientist_discover_cure_test(Player& player, Board& board) {
+void scientist_discover_cure_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		/* n = Random number from 1 to 5 */
@@ -291,7 +274,7 @@ void scientist_discover_cure_test(Player& player, Board& board) {
 	return;
 }
 /* Researcher Action */
-void researcher_discover_cure_test(Player& player, Board& board) {
+void researcher_discover_cure_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		Researcher researcher(board, city.first);
@@ -309,7 +292,7 @@ void researcher_discover_cure_test(Player& player, Board& board) {
 	return;
 }
 /* GeneSplicer Action */
-void geneSplicer_discover_cure_test(Player& player, Board& board) {
+void geneSplicer_discover_cure_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		GeneSplicer geneSplicer(board, city.first);
@@ -331,10 +314,9 @@ void geneSplicer_discover_cure_test(Player& player, Board& board) {
 	return;
 }
 /* Other-Players Action (no special action when discovering cure) */
-void discover_cure_test(Player& player, Board& board) {
+void discover_cure_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
-		//Player default_player = get_new_player(board, city.first, player.role());
 		OperationsExpert default_player{board, city.first};
 		if (research_stations_cities.count(city.first)!=0) {
 			int counter = 0;
@@ -362,15 +344,15 @@ void discover_cure_test(Player& player, Board& board) {
 
 /* ---------------------------- Treat Test ---------------------------- */
 /* Medic Action */
-void medic_treat_test(Player& player, Board& board) {
+void medic_treat_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
-		Medic same_role_player(board, city.first);
+		Medic some_player(board, city.first);
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 		int iRand = (rand() % 9) + 1;
 		board[city.first] = iRand;
 		/* should not throw an error (medic set the disease to 0) */
-		CHECK_NOTHROW(same_role_player.treat(city.first));
+		CHECK_NOTHROW(some_player.treat(city.first));
 		/* default player */
 		Dispatcher p{board, city.first};
 		/* should throw an error (medic already set the disease to 0) */
@@ -379,7 +361,7 @@ void medic_treat_test(Player& player, Board& board) {
 	return;
 }
 /* Virologist Action */
-void virologist_treat_test(Player& player, Board& board) {
+void virologist_treat_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
@@ -390,21 +372,21 @@ void virologist_treat_test(Player& player, Board& board) {
 			it = cities_mp.begin();
 			std::advance(it, (uint)rand() % cities_mp.size());
 		}
-		Virologist same_role_player(board, it->first);
+		Virologist some_player(board, it->first);
 		/* should throw an error (no card) */
-		CHECK_THROWS(same_role_player.treat(city.first));
+		CHECK_THROWS(some_player.treat(city.first));
 		/* take the card */
-		same_role_player.take_card(city.first);
+		some_player.take_card(city.first);
 		/* should not throw an error (card taken) */
-		CHECK_NOTHROW(same_role_player.treat(city.first));
+		CHECK_NOTHROW(some_player.treat(city.first));
 	}
 	return;
 }
 /* FieldDoctor Action */
-void fieldDoctor_treat_test(Player& player, Board& board) {
+void fieldDoctor_treat_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
-		FieldDoctor same_role_player(board, city.first);
+		FieldDoctor some_player(board, city.first);
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 		int iRand = (rand() % 9) + 1;
 		board[city.first] = iRand;
@@ -415,20 +397,19 @@ void fieldDoctor_treat_test(Player& player, Board& board) {
 		board[it->first] = iRand;
 		if (city.first==it->first || cities_mp[city.first].neighbors.count(it->first)) {
 			/* should not throw an error (nearby city) */
-			CHECK_NOTHROW(same_role_player.treat(it->first));
+			CHECK_NOTHROW(some_player.treat(it->first));
 		} else {
 			/* should throw an error (not a nearby city) */
-			CHECK_THROWS(same_role_player.treat(it->first));
+			CHECK_THROWS(some_player.treat(it->first));
 		}
 	}
 	return;
 }
 /* Other-Players Action */
-void treat_test(Player& player, Board& board) {
+void treat_test(Board& board) {
 	for (auto &city : cities_mp) {
 		if (cities_to_test.count(city.first)==0) continue;
-		//Player same_role_player = get_new_player(board, city.first, player.role());
-		OperationsExpert same_role_player{board, city.first};
+		OperationsExpert some_player{board, city.first};
 		/* calculate a random variable (between 1 and 9) for the level of disease in the current city */
 		board.remove_cures();
 		int iRand = (rand() % 9) + 1;
@@ -439,7 +420,7 @@ void treat_test(Player& player, Board& board) {
 			Researcher researcher = five_cards_researcher(board, city.first);
 			researcher.discover_cure(city.second.color);
 			/* should not throw an error (disease level is greater than 0)) */
-			CHECK_NOTHROW(same_role_player.treat(city.first));
+			CHECK_NOTHROW(some_player.treat(city.first));
 			stringstream des;
 			des << board[city.first];
 			/* check if the disease level has been set to 0 (cure has been found) */
@@ -450,11 +431,11 @@ void treat_test(Player& player, Board& board) {
 			while (iRand>=0) {
 				/* should throw an error (trying to treat while disease level is 0) */
 				if (iRand==0) {
-					CHECK_THROWS(same_role_player.treat(city.first));
+					CHECK_THROWS(some_player.treat(city.first));
 					break;
 				}
 				/* should not throw an error (reduce disease level by 1) */
-				CHECK_NOTHROW(same_role_player.treat(city.first));
+				CHECK_NOTHROW(some_player.treat(city.first));
 				iRand--;
 				stringstream des;
 				des << board[city.first];
@@ -467,7 +448,7 @@ void treat_test(Player& player, Board& board) {
 }
 
 /* ------------------------- Medic Auto-heal Test ------------------------- */
-void medic_auto_heal_test(Player& player, Board& board) {
+void medic_auto_heal_test(Board& board) {
 	Board b;
 	Medic medic{b, City::Algiers};
 	set<Color> auto_heal_cities;
@@ -490,26 +471,26 @@ void medic_auto_heal_test(Player& player, Board& board) {
 		/* go the one of the neighbors of the current city */
 		auto some_neighbor = city.second.neighbors.begin();
 		std::advance(some_neighbor, 0);
-		Medic same_role_player(b, *some_neighbor);
+		Medic some_player(b, *some_neighbor);
 		if (iRand==1) {
 			/* Checking the correctness of the auto-heal by driving to the city */
-			Medic same_role_player(b, *some_neighbor);
-			same_role_player.drive(city.first);
+			Medic some_player(b, *some_neighbor);
+			some_player.drive(city.first);
 		} else if (iRand==2) {
 			/* Checking the correctness of the auto-heal by fly_direct to the city */
-			same_role_player.take_card(city.first);
-			same_role_player.fly_direct(city.first);
+			some_player.take_card(city.first);
+			some_player.fly_direct(city.first);
 		} else if (iRand==3) {
 			/* Checking the correctness of the auto-heal by fly_charter to the city */
-			same_role_player.take_card(*some_neighbor);
-			same_role_player.fly_charter(city.first);
+			some_player.take_card(*some_neighbor);
+			some_player.fly_charter(city.first);
 		} else { /* iRand==4 */
 		/* Checking the correctness of the auto-heal by fly_shuttle to the city */
 			OperationsExpert b1(b, city.first);
 			b1.build();
 			OperationsExpert b2(b, *some_neighbor);
 			b2.build();
-			same_role_player.fly_shuttle(city.first);
+			some_player.fly_shuttle(city.first);
 		}
 		/* If the disease in the current city has been treated */
 		if (auto_heal_cities.count(city.second.color)!=0) {
@@ -521,30 +502,31 @@ void medic_auto_heal_test(Player& player, Board& board) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-////////////////////////////// Tests Cases ///////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 ///////////////  ________________________________________  ///////////////
-/////////////// | Should run build_and_fly_shuttle_test  | ///////////////
-/////////////// | before all to build research stations! | ///////////////
+/////////////// |                                        | ///////////////
+/////////////// |              Tests Cases               | ///////////////
 /////////////// |________________________________________| ///////////////
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 TEST_CASE("No-Special-Skills Test") {
 	/* init */
 	init();
 	Board board;
-	FieldDoctor player(board, City::Washington);
-	build_and_fly_shuttle_test(player, board);
+	/* Should run build_and_fly_shuttle_test before all to build research stations */
+	build_and_fly_shuttle_test(board);
 	SUBCASE("Player Drive Test") {
-		drive_test(player, board);
+		drive_test(board);
 	}
 	SUBCASE("Player Fly Direct Test") {
-		fly_direct_test(player, board);
+		fly_direct_test(board);
 	}
 	SUBCASE("Player Fly Charter Test") {
-		fly_charter_test(player, board);
+		fly_charter_test(board);
 	}
 	SUBCASE("Player Discover Cure Test") {
-		discover_cure_test(player, board);
+		discover_cure_test(board);
 	}
 	
 }
@@ -553,9 +535,8 @@ TEST_CASE("No-Special-Skills Test2") {
 	/* init */
 	init();
 	Board board;
-	OperationsExpert player(board, City::Washington);
 	SUBCASE("Player Treat Test") {
-		treat_test(player, board);
+		treat_test(board);
 	}
 }
 
@@ -563,9 +544,8 @@ TEST_CASE("Researcher Test") {
 	/* init */
 	init();
 	Board board;
-	Researcher player(board, City::Washington);
 	SUBCASE("Researcher Discover Cure Test") {
-		researcher_discover_cure_test(player, board);
+		researcher_discover_cure_test(board);
 	}
 }
 
@@ -573,11 +553,10 @@ TEST_CASE("Scientist Test") {
 	/* init */
 	init();
 	Board board;
-	Scientist player(board, City::Washington, 4);
 	/* Should build random research stations for discover_cure test */
-	build_test(player, board);
+	build_test(board);
 	SUBCASE("Scientist Discover Cure Test") {
-		scientist_discover_cure_test(player, board);
+		scientist_discover_cure_test(board);
 	}
 }
 
@@ -585,9 +564,8 @@ TEST_CASE("FieldDoctor Test") {
 	/* init */
 	init();
 	Board board;
-	FieldDoctor player(board, City::Washington);
 	SUBCASE("FieldDoctor Treat Test") {
-		fieldDoctor_treat_test(player, board);
+		fieldDoctor_treat_test(board);
 	}
 }
 
@@ -595,11 +573,10 @@ TEST_CASE("GeneSplicer Test") {
 	/* init */
 	init();
 	Board board;
-	GeneSplicer player(board, City::Washington);
 	/* Should build random research stations for discover_cure test */
-	build_test(player, board);
+	build_test(board);
 	SUBCASE("GeneSplicer Discover Cure Test") {
-		geneSplicer_discover_cure_test(player, board);
+		geneSplicer_discover_cure_test(board);
 	}
 }
 
@@ -607,20 +584,18 @@ TEST_CASE("OperationsExpert Test") {
 	/* init */
 	init();
 	Board board;
-	OperationsExpert player(board, City::Washington);
-	operationsExpert_build_test(player,board);
-	fly_shuttle_test(player, board);
+	operationsExpert_build_test(board);
+	fly_shuttle_test(board);
 }
 
 TEST_CASE("Dispatcher Test") {
 	/* init */
 	init();
 	Board board;
-	Dispatcher player(board, City::Washington);
 	/* Should build random research stations for fly_direct test */
-	build_test(player, board);
+	build_test(board);
 	SUBCASE("Dispatcher Fly Direct Test") {
-		dispatcher_fly_direct_test(player, board);
+		dispatcher_fly_direct_test(board);
 	}
 }
 
@@ -628,12 +603,11 @@ TEST_CASE("Medic Test") {
 	/* init */
 	init();
 	Board board;
-	Medic player(board, City::Washington);
 	SUBCASE("Medic Treat Test") {
-		medic_treat_test(player, board);
+		medic_treat_test(board);
 	}
 	SUBCASE("Medic Auto-heal Test") {
-		medic_auto_heal_test(player, board);
+		medic_auto_heal_test(board);
 	}
 }
 
@@ -641,8 +615,7 @@ TEST_CASE("Virologist Test") {
 	/* init */
 	init();
 	Board board;
-	Virologist player(board, City::Washington);
 	SUBCASE("Virologist Treat Test") {
-		virologist_treat_test(player, board);
+		virologist_treat_test(board);
 	}
 }
